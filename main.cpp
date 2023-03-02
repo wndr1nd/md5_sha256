@@ -11,7 +11,7 @@ int main(int argc, char *argv[])
     if (argc == 2)
     {
        QDir dr(argv[1]);
-       w.generate_hash(dr);
+       w.generate_hash(&dr);
        return 0;
     }
     else

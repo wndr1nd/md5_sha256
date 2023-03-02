@@ -20,23 +20,24 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::generate_hash(QDir dir2)
+void MainWindow::generate_hash(QDir *dir2)
 {
+
     QFileInfoList listfile;
     std::ifstream ss;
     SHA256 sh;
     std::ofstream qw;
     std::string strr;
 
-    QFile mfile(dir2.absolutePath() + "/" + "digest.sha256.txt");
+    QFile mfile(dir2->absolutePath() + "/" + "digest.sha256.txt");
 
-    for (QFileInfo &elem : dir2.entryInfoList(QDir::Files|QDir::NoDotAndDotDot, QDir::Name))
+    for (QFileInfo &elem : dir2->entryInfoList(QDir::Files|QDir::NoDotAndDotDot, QDir::Name))
     {
         listfile.append(elem);
     }
 
     mfile.open(QIODevice::WriteOnly);
-    qw.open(dir2.absolutePath().toStdString() + "/" + "digest.sha256.txt", std::ofstream::app);
+    qw.open(dir2->absolutePath().toStdString() + "/" + "digest.sha256.txt", std::ofstream::app);
 
     for (auto &elem : listfile)
     {
@@ -53,6 +54,7 @@ void MainWindow::generate_hash(QDir dir2)
        qw << sh.getHash() + " " + elem.fileName().toStdString() + "\n";
        sh.reset();
        ss.close();
+
         }
     }
 
@@ -60,8 +62,8 @@ void MainWindow::generate_hash(QDir dir2)
 
 
 
-   qw.close();
-   mfile.close();
+  qw.close();
+  mfile.close();
   exit(0);
 
 }
@@ -94,65 +96,13 @@ void MainWindow::on_list_doubleClicked(const QModelIndex &index)
 
 void MainWindow::on_pushButton_clicked()
 {
-    QFileInfoList listfile;
-    std::string strr;
-    std::ifstream ss;
-    SHA256 sh;
-    std::ofstream qw;
 
- QFileInfo fileinfo = model->fileInfo(listview->currentIndex());
+ listview->setRootIndex(listview->currentIndex());
 
-  QString filepath = fileinfo.absoluteFilePath();
-
-  listview->setRootIndex(listview->currentIndex());
-
-  QDir dir(model->filePath(listview->rootIndex()));
+ QDir dir = QDir(model->filePath(listview->rootIndex()));
 
 
-  QFile mfile(filepath + "/" + "digest.sha256.txt");
-
-  qw.open(filepath.toStdString() + "/" + "digest.sha256.txt", std::ofstream::app);
-
-
-  for (QFileInfo &elem : dir.entryInfoList(QDir::Files|QDir::NoDotAndDotDot, QDir::Name))
-  {
-      listfile.append(elem);
-  }
-
-
-
-
-
-  mfile.open(QIODevice::WriteOnly);
-
-
-  for (auto &elem : listfile)
-  {
-    if (elem.fileName() != "digest.sha256.txt"){
-     ss.open(elem.absoluteFilePath().toStdString(), std::ios_base::binary);
-
-     char ch;
-     while (ss.get(ch)) {
-
-         strr += ch;
-     }
-     sh(strr);
-     strr = "";
-     qw << sh.getHash() + " " + elem.fileName().toStdString() + "\n";
-     sh.reset();
-     ss.close();
-      }
-  }
-
-
-
-
-
- qw.close();
- mfile.close();
-
-listview->setRootIndex(model->index(""));
-exit(0);
+ generate_hash(&dir);
 
 }
 

@@ -23,11 +23,11 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    void generate_hash(QDir dir2);
+    void generate_hash(QDir *dir2 = nullptr);
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
-private slots:
+public slots:
     void on_list_doubleClicked(const QModelIndex &index);
 
     void on_pushButton_clicked();
