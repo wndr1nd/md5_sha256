@@ -8,10 +8,10 @@
 #include <QWidget>
 #include <QtWidgets/QListView>
 #include "sha256.h"
+#include "md5.h"
 #include <iostream>
 #include <fstream>
 #include <string>
-#include <QCryptographicHash>
 
 
 QT_BEGIN_NAMESPACE

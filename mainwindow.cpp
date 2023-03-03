@@ -29,7 +29,7 @@ void MainWindow::generate_hash(QDir *dir2)
     std::ofstream qw;
     std::string strr;
 
-    QFile mfile(dir2->absolutePath() + "/" + "digest.sha256.txt");
+    QFile mfile(dir2->absolutePath() + "/" + "digest.sha256");
 
     for (QFileInfo &elem : dir2->entryInfoList(QDir::Files|QDir::NoDotAndDotDot, QDir::Name))
     {
@@ -37,11 +37,11 @@ void MainWindow::generate_hash(QDir *dir2)
     }
 
     mfile.open(QIODevice::WriteOnly);
-    qw.open(dir2->absolutePath().toStdString() + "/" + "digest.sha256.txt", std::ofstream::app);
+    qw.open(dir2->absolutePath().toStdString() + "/" + "digest.sha256", std::ofstream::app);
 
     for (auto &elem : listfile)
     {
-      if (elem.fileName() != "digest.sha256.txt"){
+      if (elem.fileName() != "digest.sha256"){
        ss.open(elem.absoluteFilePath().toStdString(), std::ios_base::binary);
 
        char ch;
@@ -105,4 +105,3 @@ void MainWindow::on_pushButton_clicked()
  generate_hash(&dir);
 
 }
-
