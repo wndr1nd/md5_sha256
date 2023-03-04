@@ -24,12 +24,11 @@ MainWindow::~MainWindow()
 void MainWindow::generate_hash(QDir *dir2, std::string str)
 {
     QFileInfoList listfile;
-    std::ifstream ss;
     SHA256 sh;
     MD5 md;
-    std::ofstream out;
-    std::ofstream out2;
-    std::string strr;
+    QFile shFile(dir2->absolutePath() + "/" + "digest.sha256");
+    QFile mdFile(dir2->absolutePath() + "/" + "digest.md5");
+    QByteArray arr;
 
     for (QFileInfo &elem : dir2->entryInfoList(QDir::Files|QDir::NoDotAndDotDot, QDir::Name))
     {
@@ -38,52 +37,52 @@ void MainWindow::generate_hash(QDir *dir2, std::string str)
 
     if (str == "")
     {
-    out.open(dir2->absolutePath().toStdString() + "/" + "digest.sha256", std::ofstream::app);
-    out2.open(dir2->absolutePath().toStdString() + "/" + "digest.md5", std::ofstream::app);
+    shFile.open(QIODevice::WriteOnly);
+    mdFile.open(QIODevice::WriteOnly);
     }
     else if (str == "sha256")
     {
-        out.open(dir2->absolutePath().toStdString() + "/" + "digest.sha256", std::ofstream::app);
+        shFile.open(QIODevice::WriteOnly);
     }
     else if (str == "md5")
     {
-        out2.open(dir2->absolutePath().toStdString() + "/" + "digest.md5", std::ofstream::app);
+        mdFile.open(QIODevice::WriteOnly);
     }
 
 
     for (auto &elem : listfile)
     {
       if (elem.fileName() != "digest.sha256" && elem.fileName() != "digest.md5"){
-       ss.open(elem.absoluteFilePath().toStdString(), std::ios_base::binary);
+        QFile tmp_file(elem.absoluteFilePath());
+        tmp_file.open(QIODevice::ReadOnly);
+        arr = tmp_file.readAll();
 
-       char ch;
-       while (ss.get(ch)) {
 
-           strr += ch;
-       }
+
 
        if (str == ""){
-        sh(strr);
-        md(strr);
-        out << sh.getHash() + " " + elem.fileName().toStdString() + "\n";
-        out2 << md.getHash() + " " + elem.fileName().toStdString() + "\n";
+        sh(arr.toStdString());
+        md(arr.toStdString());
+        shFile.write(QByteArray::fromStdString(sh.getHash() + " " + elem.fileName().toStdString() + "\n"));
+        mdFile.write(QByteArray::fromStdString(md.getHash() + " " + elem.fileName().toStdString() + "\n"));
        }
 
        else if (str == "sha256")
        {
-           sh(strr);
-           out << sh.getHash() + " " + elem.fileName().toStdString() + "\n";
+           sh(arr.toStdString());
+           shFile.write(QByteArray::fromStdString(sh.getHash() + " " + elem.fileName().toStdString() + "\n"));
+
        }
        else if (str == "md5")
        {
-           md(strr);
-           out2 << md.getHash() + " " + elem.fileName().toStdString() + "\n";
+           md(arr.toStdString());
+           mdFile.write(QByteArray::fromStdString(md.getHash() + " " + elem.fileName().toStdString() + "\n"));
        }
 
        sh.reset();
        md.reset();
-       ss.close();
-       strr = "";
+       arr.clear();
+       tmp_file.close();
 
         }
     }
@@ -92,8 +91,8 @@ void MainWindow::generate_hash(QDir *dir2, std::string str)
 
 
 
-  out.close();
-  out2.close();
+  shFile.close();
+  mdFile.close();
   exit(0);
 
 }

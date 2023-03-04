@@ -10,9 +10,8 @@
 #include "sha256.h"
 #include "md5.h"
 #include <iostream>
-#include <fstream>
 #include <string>
-#include <filesystem>
+#include <QDataStream>
 
 
 QT_BEGIN_NAMESPACE

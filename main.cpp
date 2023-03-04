@@ -3,14 +3,15 @@
 
 int main(int argc, char *argv[])
 {
-
     QApplication a(argc, argv);
     MainWindow w;
 
     if (argc > 1)
-    {
+    {      
        QDir dr(argv[1]);
+       qDebug() << argv[1];
        std::string str = "";
+
        if (argc > 2)
        {
            str = argv[2];
