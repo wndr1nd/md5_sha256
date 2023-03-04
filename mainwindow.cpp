@@ -20,28 +20,40 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::generate_hash(QDir *dir2)
-{
 
+void MainWindow::generate_hash(QDir *dir2, std::string str)
+{
     QFileInfoList listfile;
     std::ifstream ss;
     SHA256 sh;
-    std::ofstream qw;
+    MD5 md;
+    std::ofstream out;
+    std::ofstream out2;
     std::string strr;
-
-    QFile mfile(dir2->absolutePath() + "/" + "digest.sha256");
 
     for (QFileInfo &elem : dir2->entryInfoList(QDir::Files|QDir::NoDotAndDotDot, QDir::Name))
     {
         listfile.append(elem);
     }
 
-    mfile.open(QIODevice::WriteOnly);
-    qw.open(dir2->absolutePath().toStdString() + "/" + "digest.sha256", std::ofstream::app);
+    if (str == "")
+    {
+    out.open(dir2->absolutePath().toStdString() + "/" + "digest.sha256", std::ofstream::app);
+    out2.open(dir2->absolutePath().toStdString() + "/" + "digest.md5", std::ofstream::app);
+    }
+    else if (str == "sha256")
+    {
+        out.open(dir2->absolutePath().toStdString() + "/" + "digest.sha256", std::ofstream::app);
+    }
+    else if (str == "md5")
+    {
+        out2.open(dir2->absolutePath().toStdString() + "/" + "digest.md5", std::ofstream::app);
+    }
+
 
     for (auto &elem : listfile)
     {
-      if (elem.fileName() != "digest.sha256"){
+      if (elem.fileName() != "digest.sha256" && elem.fileName() != "digest.md5"){
        ss.open(elem.absoluteFilePath().toStdString(), std::ios_base::binary);
 
        char ch;
@@ -49,11 +61,29 @@ void MainWindow::generate_hash(QDir *dir2)
 
            strr += ch;
        }
-       sh(strr);
-       strr = "";
-       qw << sh.getHash() + " " + elem.fileName().toStdString() + "\n";
+
+       if (str == ""){
+        sh(strr);
+        md(strr);
+        out << sh.getHash() + " " + elem.fileName().toStdString() + "\n";
+        out2 << md.getHash() + " " + elem.fileName().toStdString() + "\n";
+       }
+
+       else if (str == "sha256")
+       {
+           sh(strr);
+           out << sh.getHash() + " " + elem.fileName().toStdString() + "\n";
+       }
+       else if (str == "md5")
+       {
+           md(strr);
+           out2 << md.getHash() + " " + elem.fileName().toStdString() + "\n";
+       }
+
        sh.reset();
+       md.reset();
        ss.close();
+       strr = "";
 
         }
     }
@@ -62,12 +92,11 @@ void MainWindow::generate_hash(QDir *dir2)
 
 
 
-  qw.close();
-  mfile.close();
+  out.close();
+  out2.close();
   exit(0);
 
 }
-
 
 
 
@@ -97,11 +126,26 @@ void MainWindow::on_list_doubleClicked(const QModelIndex &index)
 void MainWindow::on_pushButton_clicked()
 {
 
+    //qDebug() << ui->md5->isChecked();
+    //qDebug() << ui->sha256->isChecked();
+
  listview->setRootIndex(listview->currentIndex());
 
  QDir dir = QDir(model->filePath(listview->rootIndex()));
 
+ //std::string str = "sha256";
 
- generate_hash(&dir);
+ if (ui->md5->isChecked())
+ {
+     generate_hash(&dir, ui->md5->objectName().toStdString());
+ }
+ else if (ui->sha256->isChecked())
+ {
+     generate_hash(&dir, ui->sha256->objectName().toStdString());
+ }
+ else
+ {
+     generate_hash(&dir, "");
+ }
 
 }

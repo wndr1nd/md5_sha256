@@ -12,6 +12,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <filesystem>
 
 
 QT_BEGIN_NAMESPACE
@@ -23,7 +24,7 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    void generate_hash(QDir *dir2 = nullptr);
+    void generate_hash(QDir *dir2 = nullptr, std::string str = "");
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
