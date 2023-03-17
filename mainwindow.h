@@ -1,17 +1,18 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
-
 #include <QMainWindow>
 #include <QDebug>
 #include <QFileSystemModel>
 #include <QDir>
 #include <QWidget>
 #include <QtWidgets/QListView>
-#include "sha256.h"
-#include "md5.h"
 #include <iostream>
 #include <string>
 #include <QDataStream>
+#include "md5.h"
+#include "sha256.h"
+#include "sha1.h"
+#include "crc32.h"
 
 
 QT_BEGIN_NAMESPACE
@@ -23,7 +24,7 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    void generate_hash(QDir *dir2 = nullptr, std::string str = "");
+    void generate_hash(QDir *dir2, std::string alg = "");
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 

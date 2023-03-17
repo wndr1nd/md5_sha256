@@ -50,6 +50,11 @@ void SHA256::reset()
 #endif
 }
 
+QString SHA256::getFileName()
+{
+    return "digest.sha256";
+}
+
 
 namespace
 {
@@ -380,6 +385,7 @@ std::string SHA256::getHash()
 
   return result;
 }
+
 
 
 /// return latest hash as bytes

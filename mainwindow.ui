@@ -28,18 +28,36 @@
       <widget class="QListView" name="list"/>
      </item>
      <item>
-      <widget class="QRadioButton" name="sha256">
-       <property name="text">
-        <string>SHA256</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QRadioButton" name="md5">
-       <property name="text">
-        <string>MD5</string>
-       </property>
-      </widget>
+      <layout class="QGridLayout" name="gridLayout">
+       <item row="0" column="0">
+        <widget class="QCheckBox" name="sha256">
+         <property name="text">
+          <string>SHA256</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QCheckBox" name="sha1">
+         <property name="text">
+          <string>SHA1</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QCheckBox" name="crc32">
+         <property name="text">
+          <string>CRC32</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QCheckBox" name="md5">
+         <property name="text">
+          <string>MD5</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
      </item>
      <item>
       <widget class="QPushButton" name="pushButton">

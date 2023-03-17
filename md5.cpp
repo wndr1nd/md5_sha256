@@ -6,7 +6,8 @@
 
 #include "md5.h"
 
-
+#ifndef _MSC_VER
+#endif
 
 
 /// same as reset()
@@ -27,6 +28,11 @@ void MD5::reset()
   m_hash[1] = 0xefcdab89;
   m_hash[2] = 0x98badcfe;
   m_hash[3] = 0x10325476;
+}
+
+QString MD5::getFileName()
+{
+    return "digest.md5";
 }
 
 
