@@ -21,79 +21,82 @@ MainWindow::~MainWindow()
 }
 
 
-void MainWindow::generate_hash(QDir *dir2, std::string str)
+QVector<Ihash *> vec;
+//void get_hash(Ihash * func, QDir * dir2, std::string hash_data, std::string elem_name)
+//{
+//    func->start_hash(dir2, hash_data, elem_name);
+//}
+
+
+
+void MainWindow::generate_hash(QDir *dir2, std::string alg)
 {
+    if (vec.isEmpty() && alg != "")
+    {
+        if (alg == "md5")
+        {
+            vec.append(new MD5);
+        }
+        else if (alg == "sha256")
+        {
+            vec.append(new SHA256);
+        }
+        else if (alg == "sha1")
+        {
+            vec.append(new SHA1);
+        }
+        else if (alg == "crc32")
+        {
+            vec.append(new CRC32);
+        }
+    }
+
+    if (vec.isEmpty() && alg == "")
+    {
+        vec.append(new MD5);
+        vec.append(new SHA256);
+        vec.append(new SHA1);
+        vec.append(new CRC32);
+    }
+
     QFileInfoList listfile;
-    std::ifstream ss;
-    SHA256 sh;
-    MD5 md;
-    std::ofstream out;
-    std::ofstream out2;
-    std::string strr;
+
+    QByteArray arr;
 
     for (QFileInfo &elem : dir2->entryInfoList(QDir::Files|QDir::NoDotAndDotDot, QDir::Name))
     {
         listfile.append(elem);
     }
 
-    if (str == "")
-    {
-    out.open(dir2->absolutePath().toStdString() + "/" + "digest.sha256", std::ofstream::app);
-    out2.open(dir2->absolutePath().toStdString() + "/" + "digest.md5", std::ofstream::app);
-    }
-    else if (str == "sha256")
-    {
-        out.open(dir2->absolutePath().toStdString() + "/" + "digest.sha256", std::ofstream::app);
-    }
-    else if (str == "md5")
-    {
-        out2.open(dir2->absolutePath().toStdString() + "/" + "digest.md5", std::ofstream::app);
-    }
 
 
     for (auto &elem : listfile)
-    {
-      if (elem.fileName() != "digest.sha256" && elem.fileName() != "digest.md5"){
-       ss.open(elem.absoluteFilePath().toStdString(), std::ios_base::binary);
+    {        
+        QFile tmp_file(elem.absoluteFilePath());
+        tmp_file.open(QIODevice::ReadOnly);
+        arr = tmp_file.readAll();
 
-       char ch;
-       while (ss.get(ch)) {
 
-           strr += ch;
-       }
-
-       if (str == ""){
-        sh(strr);
-        md(strr);
-        out << sh.getHash() + " " + elem.fileName().toStdString() + "\n";
-        out2 << md.getHash() + " " + elem.fileName().toStdString() + "\n";
-       }
-
-       else if (str == "sha256")
-       {
-           sh(strr);
-           out << sh.getHash() + " " + elem.fileName().toStdString() + "\n";
-       }
-       else if (str == "md5")
-       {
-           md(strr);
-           out2 << md.getHash() + " " + elem.fileName().toStdString() + "\n";
-       }
-
-       sh.reset();
-       md.reset();
-       ss.close();
-       strr = "";
-
+        for (auto &item : vec)
+        {
+            item->start_hash(dir2, arr.toStdString(), elem.fileName().toStdString(), item->getFileName());
         }
+
+       arr.clear();
+       tmp_file.close();
+    }
+
+    for (auto &elem: vec)
+    {
+        delete elem;
     }
 
 
-
-
-
-  out.close();
-  out2.close();
+  vec.clear();
+//  if (vec.isEmpty())
+//  {
+//      qDebug() << "EMPTY";
+//  }
   exit(0);
 
 }
@@ -126,26 +129,29 @@ void MainWindow::on_list_doubleClicked(const QModelIndex &index)
 void MainWindow::on_pushButton_clicked()
 {
 
-    //qDebug() << ui->md5->isChecked();
-    //qDebug() << ui->sha256->isChecked();
 
  listview->setRootIndex(listview->currentIndex());
 
  QDir dir = QDir(model->filePath(listview->rootIndex()));
 
- //std::string str = "sha256";
-
  if (ui->md5->isChecked())
  {
-     generate_hash(&dir, ui->md5->objectName().toStdString());
+     vec.append(new MD5);
  }
- else if (ui->sha256->isChecked())
+if (ui->sha256->isChecked())
  {
-     generate_hash(&dir, ui->sha256->objectName().toStdString());
+     vec.append(new SHA256);
  }
- else
+if (ui->crc32->isChecked())
  {
-     generate_hash(&dir, "");
+    vec.append(new CRC32);
  }
+if (ui->sha1->isChecked())
+ {
+    vec.append(new SHA1);
+ }
+
+
+generate_hash(&dir);
 
 }

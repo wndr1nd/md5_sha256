@@ -3,18 +3,18 @@
 
 int main(int argc, char *argv[])
 {
-
     QApplication a(argc, argv);
     MainWindow w;
 
     if (argc > 1)
-    {
+    {      
        QDir dr(argv[1]);
        std::string str = "";
+
        if (argc > 2)
        {
            str = argv[2];
-           if (str != "sha256" && str != "md5")
+           if (str != "sha256" && str != "md5" && str != "sha1" && str != "crc32")
            {
                return 0;
            }

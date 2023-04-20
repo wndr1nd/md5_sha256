@@ -5,9 +5,8 @@
 //
 
 #pragma once
-
+#include "ihash.h"
 //#include "hash.h"
-#include <string>
 
 // define fixed size integer types
 #ifdef _MSC_VER
@@ -34,7 +33,7 @@ typedef unsigned __int64 uint64_t;
       sha256.add(pointer to fresh data, number of new bytes);
     std::string myHash3 = sha256.getHash();
   */
-class SHA256 //: public Hash
+class SHA256:public Ihash
 {
 public:
   /// split into 64 byte blocks (=> 512 bits), hash is 32 bytes long
@@ -53,12 +52,14 @@ public:
 
   /// return latest hash as 64 hex characters
   std::string getHash();
+
   /// return latest hash as bytes
   void        getHash(unsigned char buffer[HashBytes]);
 
   /// restart
   void reset();
 
+  QString getFileName();
 private:
   /// process 64 bytes
   void processBlock(const void* data);
@@ -75,4 +76,5 @@ private:
   enum { HashValues = HashBytes / 4 };
   /// hash, stored as integers
   uint32_t m_hash[HashValues];
+
 };
